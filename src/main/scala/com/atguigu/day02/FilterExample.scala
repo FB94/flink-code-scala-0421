@@ -1,10 +1,10 @@
 package com.atguigu.day02
 
 import com.atguigu.day02.util.{SensorReading, SensorSource}
-import org.apache.flink.api.common.functions.MapFunction
+import org.apache.flink.api.common.functions.FilterFunction
 import org.apache.flink.streaming.api.scala._
 
-object MapExample {
+object FilterExample {
   def main(args: Array[String]): Unit = {
     val env: StreamExecutionEnvironment = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
@@ -12,22 +12,21 @@ object MapExample {
     val stream: DataStream[SensorReading] = env.addSource(new SensorSource)
 
     stream
-      .map(r => r.id)
-      .print()
+      .filter(r=>r.id.equals("sensor_1"))
 
     stream
-        .map(new MapFunction[SensorReading,String] {
-          override def map(t: SensorReading): String = t.id
-        })
+      .filter(new FilterFunction[SensorReading] {
+        override def filter(t: SensorReading): Boolean = t.id.equals("sensor_1")
+      })
 
     stream
-      .map(new MyMap)
+      .filter(new MyFilter)
       .print()
-
     env.execute()
   }
-  class MyMap extends MapFunction[SensorReading,String]{
-    override def map(t: SensorReading): String = t.id
+
+  class MyFilter extends FilterFunction[SensorReading]{
+    override def filter(t: SensorReading): Boolean = t.id.equals("sensor_1")
   }
 
 }
