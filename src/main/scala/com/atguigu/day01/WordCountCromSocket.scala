@@ -7,8 +7,7 @@ object WordCountCromSocket {
     val env = StreamExecutionEnvironment.getExecutionEnvironment
     env.setParallelism(1)
 
-    ##
-    val stream = env.socketTextStream("hadoop105", 9999, '\n')
+    val stream = env.socketTextStream("localhost", 9999, '\n')
 
     stream
       .flatMap(r => r.split(" "))
